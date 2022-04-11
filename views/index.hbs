@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8" />
+      <title>Portfolio</title>
+
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <link rel="preconnect" href="https://fonts.gstatic.com"> 
+      <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
+
+      <style>
+         * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            font-family: 'Inconsolata', monospace;
+            font-size: 16px;
+         }
+         body { 
+            width: 100vw;
+            height: 100vh;
+            background-color: rgb(7, 13, 18);
+         }
+
+         #balance-container{
+            width: calc(100% - 350px);
+            height: 100%;
+            float: left;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            float: left;
+         }
+         #balance-container #balance{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding-bottom: 20px;
+         }
+         #balance-container #balance #equity { 
+            list-style-type: 
+            none; margin: 0; 
+            padding: 0; 
+            text-shadow: 0px 5px 5px #060606;
+            color: rgb(137 98 98);
+         }
+         #balance-container #balance #equity.positive { 
+            color: #d6d6d6;
+         }
+         #balance-container #balance #total-profit { 
+            list-style-type: 
+            none; margin: 0; 
+            padding: 0; 
+            text-shadow: 0px 5px 5px #060606;
+            color: rgb(137 98 98);
+         }
+         #balance-container #balance #total-profit.positive { 
+            color: rgb(98 137 101);
+         } 
+
+         #status{
+            width: 350px;
+            height: 50px;
+            border-left: 1px solid #252b36;
+            border-bottom: 1px solid #252b36;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            float: right;
+         }
+         #status #status-indicator{
+            width: 20px;
+            height: 20px;
+            border-radius: 1000px;
+            background-color: grey;
+         }
+         #trades-container{
+            width: 350px;
+            height: calc(100% - 50px);
+            padding: 15px 20px;
+            overflow: auto;
+            float: right;
+            border-left: 1px solid #252b36;
+         }
+         #trades-container #trades{
+            width: 100%;
+            margin-top: 15px;
+         }
+         #trades-container #trades .trade{
+            height: 60px;
+            color: #d6d6d6;
+            background-color: rgb(20,29,38);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            padding: 0 10px;
+         }
+         #trades-container #trades .trade:last-child{
+            margin-bottom: none;
+         }
+         #trades-container #trades .trade .name{
+            font-size: 1.2rem;
+            width: 50px;
+         }
+         #trades-container #trades .trade .equity{
+            font-size: 1.5rem;
+            width: calc(100% - 130px);
+            text-align: right;
+            padding-right: 15px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+            color: rgb(137 98 98);
+         }
+         #trades-container #trades .trade .equity.positive { 
+            color: rgb(98 137 101);
+         } 
+         #trades-container #trades .trade .other{
+            width: 80px;
+            text-align: right;
+         }
+         #trades-container #trades .trade .volume{
+            font-size: 1rem;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+         }
+         #trades-container #trades .trade .close_price{
+            font-size: 1rem;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+         }
+         #trades-container #trades .trade .open_price{
+            color: rgb(136 137 98);
+            font-size: 1rem;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+         }
+
+         .title{
+            color: white;
+         }
+
+         @media (max-width: 850px) {
+            #status{
+               width: 100%;
+               border-left: none;
+               float: unset;
+            }
+
+            #balance-container { 
+               width: 100%;
+               height: fit-content;
+               float: unset;
+               border-bottom: 1px solid #252b36;
+               padding-bottom: 30px;
+            }
+            #balance-container #balance{
+               margin-top: 20px;
+            }
+
+            #trades-container{
+               width: 100%;
+               height: fit-content;
+               border-left: none;
+               float: unset;
+            }
+         }
+      </style>
+   </head>
+   <body>
+
+      <div id="status">
+         <span class="title">Status</span>
+         <div id="status-indicator"></div>
+      </div>
+
+      <div id="balance-container">
+         <span class="title">Balance</span>
+         <div id="balance">
+            <div id="equity"></div>
+            <div id="total-profit"></div>
+         </div>
+      </div>
+
+      <!-- <div id="panel"> -->
+         
+         <div id="trades-container">
+            <span class="title">Trade</span>
+            <div id="trades"></div>
+         </div>
+      <!-- </div> -->
+
+
+      <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+      <script>
+         //var socket = io({ transports: ["websocket"] });
+         var socket = io();
+
+         socket.on('connect', function() {
+            $("#status-indicator").css("background-color", "rgb(50, 255, 0)");
+
+            setTimeout(function() {
+               socket.emit('request', 'update')
+            }, 200);
+         })
+         socket.on('disconnect', function() {
+            $("#status-indicator").css("background-color", "rgb(209, 14, 14)");
+         })
+         socket.on('error', function() {
+            $("#status-indicator").css("background-color", "rgb(255, 246, 0)");
+         })
+
+         socket.on('update', function(data){
+            // socket.disconnect();
+            // console.log(data);
+
+            $('#equity').html('€' + Math.abs(data._balance._equity).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+            $('#total-profit').html('€' + Math.abs(data._balance._profit).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+
+            if ( data._balance._equity >= 0 ) {
+               $('#equity').addClass("positive");
+            } else {
+               $('#equity').removeClass("positive");
+            }
+
+            if ( data._balance._profit >= 0 ) {
+               $('#total-profit').addClass("positive");
+            } else {
+               $('#total-profit').removeClass("positive");
+            }
+
+            resizeBalanceText();
+
+            $('#trades').empty();
+
+            data._trades._trades
+               .sort((a,b) => (a._symbol > b._symbol) ? 1 : ((b._symbol > a._symbol) ? -1 : 0))
+
+            data._trades._trades.forEach(trade => {
+               $('#trades').append(
+                  '<div class="trade"> \
+                     <span class="name">' 
+                        + 
+                        trade._symbol.split('.')[0]
+                        + 
+                     '</span> \
+                     <span class="equity' + (trade._profit >= 0 ? ' positive' : '') + '">€' 
+                        + 
+                        Math.abs(trade._profit).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        + 
+                     '</span> \
+                     <div class="other"> \
+                     <span class="volume">' 
+                        + 
+                        trade._volume
+                        + 
+                     '</span> \
+                     <span class="close_price">€' 
+                        + 
+                        trade._close_price.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        +
+                     '</span> \
+                     <span class="open_price">€' 
+                        + 
+                        trade._open_price.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        +
+                     '</span> \
+                     </div></div>'
+                  );
+            })
+         });
+
+         function resizeBalanceText() {
+            if ( $( window ).width() <= 850 ) {
+               $('#equity').css('font-size', 'calc(1.6 * (100vw - 40px) / ' + $('#equity').html().length + ')');
+               $('#total-profit').css('font-size', 'calc(0.8 * (100vw - 40px) / ' + $('#total-profit').html().length + ')');
+            } else if ( $( window ).width() > 850 && $( window ).width() <= 1800 ) {
+               $('#equity').css('font-size', 'calc(1.6 * ((100vw - 350px) - 40px) / ' + $('#equity').html().length + ')');
+               $('#total-profit').css('font-size', 'calc(0.8 * ((100vw - 350px) - 40px) / ' + $('#total-profit').html().length + ')');
+            } else {
+               $('#equity').css('font-size', 'calc(1.6 * ((1800px - 350px) - 40px) / ' + $('#equity').html().length + ')');
+               $('#total-profit').css('font-size', 'calc(0.8 * ((1800px - 350px) - 40px) / ' + $('#total-profit').html().length + ')');
+            }
+         }
+
+         $( window ).resize(resizeBalanceText);
+      </script>
+   </body>
+</html>
